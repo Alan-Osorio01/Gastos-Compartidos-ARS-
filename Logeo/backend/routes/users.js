@@ -7,7 +7,7 @@ const usersController = require('../controllers/userController');
 router.get('/', usersController.getUsers);
 
 // ⚠️ Ya no existe createUser (lo quitamos porque no hay admin)
-// router.post('/', usersController.createUser); ❌ quítalo
+// router.post('/', usersController.createUser); 
 
 // Actualizar usuario
 router.put('/:id', usersController.updateUser);

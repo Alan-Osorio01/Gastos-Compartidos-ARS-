@@ -1,7 +1,7 @@
-// frontend/src/components/Register.js
 import React, { useState } from "react";
 
 export default function Register() {
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
@@ -11,15 +11,15 @@ export default function Register() {
       const res = await fetch("http://localhost:5000/api/auth/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password })
+        body: JSON.stringify({ name, email, password })
       });
 
-      const data = await res.json();
+      const data = await res.json().catch(() => ({}));
 
       if (res.ok) {
-        alert(data.msg || "Usuario registrado con éxito ✅");
+        alert(data.message || data.msg || "Usuario registrado con éxito ✅");
       } else {
-        alert(data.msg || "Error al registrar ❌");
+        alert(data.message || data.msg || "Error al registrar ❌");
       }
     } catch (err) {
       alert("Error del servidor");
@@ -34,13 +34,15 @@ export default function Register() {
           Crear Cuenta
         </h2>
         <form className="space-y-4" onSubmit={handleRegister}>
-          {/* Nombre completo (opcional, pero ahora no lo guardas en backend) */}
           <div>
             <label className="block text-gray-700">Nombre completo</label>
             <input
               type="text"
               placeholder="Tu nombre"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
               className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              required
             />
           </div>
           <div>

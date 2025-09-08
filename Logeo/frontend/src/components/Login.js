@@ -27,7 +27,7 @@ export default function Login() {
         navigate("/client-dashboard");
         }
          else {
-        alert(data.msg || "Error al iniciar sesión ❌");
+        alert(data.message || data.msg || "Credenciales inválidas ❌");
       }
     } catch (err) {
       alert("Error del servidor");

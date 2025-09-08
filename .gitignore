@@ -47,3 +47,7 @@ build/
 # === Frontend bundlers ===
 *.map
 .tmp/
+
+# backups y carpeta suelta
+*.bak
+Gastos-Compartidos-ARS-/

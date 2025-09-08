@@ -35,15 +35,29 @@ app.use(helmet({
 }));
 
 // CORS con allowlist
-const allowlist = [process.env.FRONTEND_ORIGIN].filter(Boolean);
-app.use(cors({
+const allowlist = [
+  process.env.FRONTEND_ORIGIN,          // ej: http://localhost:3000
+  'http://localhost:3000',              // hardcode útil en dev
+  'http://127.0.0.1:3000'
+].filter(Boolean);
+
+const corsOptions = {
   origin: (origin, cb) => {
+    // permitir también llamadas sin Origin (curl, Postman)
     if (!origin || allowlist.includes(origin)) return cb(null, true);
     return cb(new Error('Not allowed by CORS'));
   },
-  credentials: true,
-}));
-app.options('*', cors()); // preflight
+  credentials: true, // si usas cookies
+  methods: ['GET','POST','PUT','PATCH','DELETE','OPTIONS'],
+  allowedHeaders: ['Content-Type','Authorization']
+};
+
+app.use(cors(corsOptions));
+// habilita respuesta al preflight
+app.options('*', cors(corsOptions));
+
+
+
 
 // Body parsers seguros
 app.use(express.json({ limit: '200kb' }));
@@ -56,8 +70,15 @@ app.use(hpp());
 app.use(compression());
 
 // Rate limiting
-const authLimiter = rateLimit({ windowMs: 15 * 60 * 1000, max: 20, standardHeaders: true, legacyHeaders: false });
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 20,
+  standardHeaders: true,
+  legacyHeaders: false,
+  skip: (req) => req.method === 'OPTIONS', // <— importante
+});
 app.use('/api/auth', authLimiter);
+
 
 // (Opcional) limitar creación/actualización de recursos
 const writeLimiter = rateLimit({ windowMs: 60 * 1000, max: 60 });
@@ -79,8 +100,9 @@ app.use('/api', notFound);
 if (process.env.NODE_ENV === 'production') {
   const frontendPath = path.join(__dirname, '..', 'frontend', 'build');
   app.use(express.static(frontendPath));
-  app.get('*', (_req, res) => res.sendFile(path.join(frontendPath, 'index.html')));
+  app.get('*', (_req, res) => res.sendFile(path.join(frontendPath, 'index.html'))); // ✅ con '*'
 }
+
 
 // Handler global de errores (SIEMPRE al final)
 app.use(errorHandler);
