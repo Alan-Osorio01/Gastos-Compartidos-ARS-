@@ -1,0 +1,27 @@
+# Node / React (monorepo frontend + backend)
+**/node_modules/
+frontend/build/
+frontend/dist/
+backend/coverage/
+coverage/
+**/.cache/
+.eslintcache
+
+# Logs
+*.log
+npm-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Config/secretos
+.env
+.env.*.local
+
+# SO/editores
+.DS_Store
+Thumbs.db
+.vscode/
+.vs/
+
+# TypeScript (si aplica)
+*.tsbuildinfo

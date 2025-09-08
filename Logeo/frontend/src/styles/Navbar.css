@@ -1,0 +1,166 @@
+/* frontend/src/styles/Navbar.css */
+
+/* Estilo base para la barra de navegación */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 2rem;
+    background-color: #ffffff;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08); /* Sombra más suave */
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1000;
+    transition: background-color 0.3s ease; /* Transición para cambios de fondo (por ejemplo, en modo oscuro) */
+}
+
+/* Estilo para el logo */
+.navbar-logo {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem; /* Espaciado más consistente */
+}
+
+.logo-icon {
+    height: 32px; /* Ligeramente más grande para mejor visibilidad */
+    width: auto;
+    object-fit: contain; /* Asegura que el logo no se deforme */
+}
+
+.navbar-brand {
+    font-weight: 700;
+    font-size: 1.75rem; /* Tamaño ligeramente mayor para destacar */
+    color: #1a1a1a; /* Color más oscuro y moderno */
+    text-decoration: none;
+    letter-spacing: -0.02em; /* Ajuste sutil para mejor legibilidad */
+}
+
+/* Estilo para los enlaces de navegación */
+.navbar-links {
+    list-style: none;
+    display: flex;
+    gap: 2rem; /* Espacio más compacto */
+    margin: 0;
+    padding: 0;
+}
+
+.nav-link {
+    text-decoration: none;
+    color: #4a4a4a; /* Tono más suave que el original */
+    font-size: 1rem;
+    font-weight: 500; /* Peso medio para mejor legibilidad */
+    transition: color 0.3s ease, transform 0.2s ease; /* Añadimos transformación para interacción */
+    position: relative; /* Para el efecto de subrayado */
+}
+
+.nav-link:hover {
+    color: #007bff;
+    transform: translateY(-1px); /* Efecto de elevación sutil */
+}
+
+.nav-link::after {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 2px;
+    bottom: -4px;
+    left: 0;
+    background-color: #007bff; /* Subrayado animado */
+    transition: width 0.3s ease;
+}
+
+.nav-link:hover::after {
+    width: 100%; /* Subrayado se expande al pasar el cursor */
+}
+
+/* Estilo para los botones CTA */
+.navbar-cta {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
+.btn {
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 6px; /* Bordes más suaves */
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.95rem; /* Tamaño más compacto */
+    transition: background-color 0.3s ease, color 0.3s ease, transform 0.2s ease;
+    cursor: pointer; /* Indica que es interactivo */
+}
+
+.btn-login {
+    background-color: transparent;
+    border: 2px solid #007bff;
+    color: #007bff;
+}
+
+.btn-login:hover {
+    background-color: #007bff;
+    color: #ffffff;
+    transform: translateY(-2px); /* Elevación al pasar el cursor */
+}
+
+.btn-register {
+    background-color: #007bff;
+    color: #ffffff;
+    border: 2px solid #007bff;
+    box-shadow: 0 2px 4px rgba(0, 123, 255, 0.2); /* Sombra para destacar */
+}
+
+.btn-register:hover {
+    background-color: #0056b3;
+    border-color: #0056b3;
+    transform: translateY(-2px); /* Elevación al pasar el cursor */
+}
+
+/* Media Queries para diseño responsivo */
+@media (max-width: 768px) {
+    .navbar {
+        padding: 1rem;
+        flex-wrap: wrap; /* Permite que los elementos se envuelvan en pantallas pequeñas */
+    }
+
+    .navbar-links {
+        display: none; /* Oculta los enlaces en pantallas pequeñas */
+        flex-direction: column;
+        width: 100%;
+        gap: 1rem;
+        margin-top: 1rem;
+    }
+
+    .navbar-links.active {
+        display: flex; /* Muestra los enlaces cuando se activa el menú (por ejemplo, con un botón hamburguesa) */
+    }
+
+    .nav-link {
+        font-size: 1.1rem;
+        text-align: center;
+    }
+
+    .navbar-cta {
+        width: 100%;
+        justify-content: center;
+        margin-top: 1rem;
+    }
+
+    .btn {
+        width: 100%;
+        text-align: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .navbar-brand {
+        font-size: 1.5rem;
+    }
+
+    .logo-icon {
+        height: 28px;
+    }
+}
