@@ -1,27 +1,49 @@
-# Node / React (monorepo frontend + backend)
-**/node_modules/
-frontend/build/
-frontend/dist/
-backend/coverage/
-coverage/
-**/.cache/
-.eslintcache
-
-# Logs
-*.log
-npm-debug.log*
-yarn-error.log*
-pnpm-debug.log*
-
-# Config/secretos
+# === Común / Common ===
 .env
-.env.*.local
-
-# SO/editores
+*.env
+*.key
+*.pem
+*.p12
+*.cer
+*.crt
+*.der
+*.log
 .DS_Store
 Thumbs.db
-.vscode/
-.vs/
 
-# TypeScript (si aplica)
-*.tsbuildinfo
+# === Node.js ===
+node_modules/
+npm-debug.log*
+yarn-error.log*
+pnpm-lock.yaml
+dist/
+build/
+.cache/
+.next/
+out/
+coverage/
+
+# === Python ===
+__pycache__/
+*.py[cod]
+*.pyo
+*.egg-info/
+*.egg
+.venv/
+venv/
+env/
+.ipynb_checkpoints/
+.pytype/
+.mypy_cache/
+.coverage
+htmlcov/
+
+# === Java ===
+target/
+*.class
+.gradle/
+build/
+
+# === Frontend bundlers ===
+*.map
+.tmp/
