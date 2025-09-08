@@ -1,0 +1,6 @@
+rules:
+  - id: js-no-eval
+    message: No uses eval(); riesgo de RCE/XSS
+    severity: ERROR
+    languages: [javascript, typescript]
+    pattern: eval(...)

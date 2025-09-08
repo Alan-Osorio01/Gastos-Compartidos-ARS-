@@ -1,0 +1,24 @@
+name: SAST - Semgrep
+on:
+  pull_request:
+  push:
+    branches: [ main ]
+
+jobs:
+  semgrep:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkoutv4
+      - name: Run Semgrep (OWASP + Secrets)
+        uses: returntocorp/semgrep-actionv1
+        with:
+          config: >
+            p/owasp-top-ten
+            p/secrets
+          generateSarif: true
+          sarifFile: semgrep.sarif
+          semgrep_args: --severity=ERROR --error
+      - name: Upload SARIF to GitHub Code Scanning
+        uses: github/codeql-action/upload-sarifv3
+        with:
+          sarif_file: semgrep.sarif
