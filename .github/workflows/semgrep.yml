@@ -8,17 +8,20 @@ jobs:
   semgrep:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkoutv4
-      - name: Run Semgrep (OWASP + Secrets)
-        uses: returntocorp/semgrep-actionv1
+      - uses: actions/checkout@v4
+
+      - name: Run Semgrep (local rules + OWASP + Secrets)
+        uses: returntocorp/semgrep-action@v1
         with:
           config: >
+            .semgrep.yml
             p/owasp-top-ten
             p/secrets
           generateSarif: true
           sarifFile: semgrep.sarif
           semgrep_args: --severity=ERROR --error
+
       - name: Upload SARIF to GitHub Code Scanning
-        uses: github/codeql-action/upload-sarifv3
+        uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: semgrep.sarif
