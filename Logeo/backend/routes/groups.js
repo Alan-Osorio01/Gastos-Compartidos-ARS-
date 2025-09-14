@@ -1,6 +1,7 @@
+// backend/routes/groups.js
 const express = require('express');
 const router = express.Router();
-const auth = require('../middleware/auth'); // asegúrate que este es el nombre correcto del archivo
+const auth = require('../middleware/auth');
 const Group = require('../models/Group');
 const User = require('../models/User');
 const validate = require('../middleware/validate');
@@ -20,7 +21,7 @@ function requireValidId(id, res) {
   return true;
 }
 
-// CREAR GRUPO
+// ===================== CREAR GRUPO =====================
 router.post('/', auth, validate.body(createGroupSchema), async (req, res) => {
   try {
     let { name, description, currency, isFavorite, inviteEmails } = req.body;
@@ -28,7 +29,7 @@ router.post('/', auth, validate.body(createGroupSchema), async (req, res) => {
     const creatorId = req.user.id.toString();
 
     // normaliza emails a minúsculas
-    inviteEmails = (inviteEmails || []).map(e => e.toLowerCase());
+    inviteEmails = (inviteEmails || []).map(e => String(e).toLowerCase());
 
     const users = inviteEmails.length
       ? await User.find({ email: { $in: inviteEmails } }).select('_id email')
@@ -66,7 +67,7 @@ router.post('/', auth, validate.body(createGroupSchema), async (req, res) => {
   }
 });
 
-// OBTENER DETALLES
+// ===================== OBTENER DETALLES =====================
 router.get('/:id', auth, async (req, res) => {
   if (!requireValidId(req.params.id, res)) return;
   try {
@@ -95,8 +96,8 @@ router.get('/:id', auth, async (req, res) => {
   }
 });
 
-// EDITAR GRUPO
-router.put('/:id', auth, validate.body(updateGroupSchema), async (req, res) => {
+// ============== HANDLER COMPARTIDO DE ACTUALIZACIÓN ==============
+const updateHandler = async (req, res) => {
   if (!requireValidId(req.params.id, res)) return;
   try {
     const group = await Group.findById(req.params.id);
@@ -108,9 +109,17 @@ router.put('/:id', auth, validate.body(updateGroupSchema), async (req, res) => {
       return res.status(403).json({ msg: 'No autorizado para editar este grupo' });
     }
 
-    const { name, description } = req.body;
+    const { name, description, currency, isFavorite } = req.body;
+
     if (name !== undefined) group.name = name;
-    if (description !== undefined) group.description = description;
+    if (description !== undefined) {
+      // ⚠️ Si quieres prevenir XSS almacenado, puedes sanitizar aquí:
+      // const sanitize = require('sanitize-html');
+      // group.description = sanitize(description, { allowedTags: [], allowedAttributes: {} });
+      group.description = description;
+    }
+    if (currency !== undefined) group.currency = currency;
+    if (isFavorite !== undefined) group.isFavorite = !!isFavorite;
 
     group.lastActivity = Date.now();
     await group.save();
@@ -121,9 +130,14 @@ router.put('/:id', auth, validate.body(updateGroupSchema), async (req, res) => {
     console.error('❌ Error editando grupo:', err);
     res.status(500).json({ msg: 'Error de servidor' });
   }
-});
+};
 
-// AGREGAR MIEMBROS POR EMAIL
+// ===================== EDITAR GRUPO (PUT y PATCH) =====================
+// Usa el mismo handler para PUT y PATCH
+router.put('/:id',   auth, validate.body(updateGroupSchema), updateHandler);
+router.patch('/:id', auth, validate.body(updateGroupSchema), updateHandler);
+
+// ===================== AGREGAR MIEMBROS POR EMAIL =====================
 router.post('/:id/add-members-by-email', auth, async (req, res) => {
   if (!requireValidId(req.params.id, res)) return;
   try {
@@ -141,7 +155,7 @@ router.post('/:id/add-members-by-email', auth, async (req, res) => {
       return res.status(403).json({ msg: 'No autorizado para agregar miembros' });
     }
 
-    const normalized = emails.filter(Boolean).map(e => e.toLowerCase());
+    const normalized = emails.filter(Boolean).map(e => String(e).toLowerCase());
     const users = await User.find({ email: { $in: normalized } }).select('_id email');
 
     const foundEmails = new Set(users.map(u => u.email));
@@ -176,7 +190,7 @@ router.post('/:id/add-members-by-email', auth, async (req, res) => {
   }
 });
 
-// ELIMINAR MIEMBRO
+// ===================== ELIMINAR MIEMBRO =====================
 router.delete('/:id/members/:memberId', auth, async (req, res) => {
   const { id, memberId } = req.params;
   if (!requireValidId(id, res) || !requireValidId(memberId, res)) return;
@@ -207,7 +221,7 @@ router.delete('/:id/members/:memberId', auth, async (req, res) => {
   }
 });
 
-// ELIMINAR GRUPO
+// ===================== ELIMINAR GRUPO =====================
 router.delete('/:id', auth, async (req, res) => {
   if (!requireValidId(req.params.id, res)) return;
   try {
@@ -228,7 +242,7 @@ router.delete('/:id', auth, async (req, res) => {
   }
 });
 
-// LISTAR GRUPOS DEL USUARIO
+// ===================== LISTAR MIS GRUPOS =====================
 router.get('/', auth, async (req, res) => {
   try {
     const groups = await Group.find({ members: req.user.id })

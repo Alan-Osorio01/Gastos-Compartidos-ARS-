@@ -56,6 +56,34 @@ app.use(cors(corsOptions));
 // habilita respuesta al preflight
 app.options('*', cors(corsOptions));
 
+// --- Hardening extra SOLO en producción ---
+if (process.env.NODE_ENV === 'production') {
+  const helmet = require('helmet');
+
+  // HSTS (solo con HTTPS)
+  app.use(helmet.hsts({
+    maxAge: 15552000,        // ~180 días
+    includeSubDomains: true,
+    preload: false
+  }));
+
+  // Política de referencia conservadora
+  app.use(helmet.referrerPolicy({ policy: 'no-referrer' }));
+
+  // CSP para el frontend servido por Express (ajusta si usas CDN/externos)
+  app.use(helmet.contentSecurityPolicy({
+    useDefaults: true,
+    directives: {
+      "default-src": ["'self'"],
+      "img-src": ["'self'", "data:"],
+      "style-src": ["'self'", "'unsafe-inline'"],   // Tailwind genera inline
+      "script-src": ["'self'"],                     // agrega dominios/CDN si usas alguno
+      "connect-src": ["'self'"],                    // llamadas XHR/fetch desde el front
+      // si el front llama a otra API de distinto dominio, agrégala aquí:
+      // "connect-src": ["'self'", "https://api.tudominio.com"]
+    }
+  }));
+}
 
 
 
